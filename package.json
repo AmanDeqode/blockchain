@@ -1,0 +1,38 @@
+{
+  "name": "blockchain",
+  "version": "1.0.0",
+  "description": "Blockchain Training",
+  "main": "app.js",
+  "dependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "bip32": "^2.0.6",
+    "bip39": "^3.0.4",
+    "bitcoinjs-lib": "^5.2.0",
+    "bs58check": "^2.1.2",
+    "create-hash": "^1.2.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "hdkey": "^2.0.1",
+    "js-sha256": "^0.9.0"
+  },
+  "devDependencies": {
+    "@babel/node": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "nodemon": "^2.0.14"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmanDeqode/blockchain.git"
+  },
+  "author": "Aman Chaudhary",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AmanDeqode/blockchain/issues"
+  },
+  "homepage": "https://github.com/AmanDeqode/blockchain#readme"
+}

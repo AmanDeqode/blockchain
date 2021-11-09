@@ -1,34 +1,44 @@
 const bip39 = require('bip39');
-import hdkey from 'hdkey';
-import createHash from 'create-hash';
-import checkHash from 'bs58check';
-import bitcoin from 'bitcoinjs-lib';
+const bip32 = require('bip32');
+const bitcoin = require('bitcoinjs-lib');
 
 class BitcoinWallet {
-    testnet = bitcoin.networks.testnet;
+
+    static getAddress(node,network) {
+        return bitcoin.payments.p2sh({
+            redeem: bitcoin.payments.p2wpkh({ pubkey: node.publicKey, network }),
+            network,
+        }).address;
+    }
+
     static bitcoinHDwallet = async (req,res,next) => {
         try {
+             const testnet = bitcoin.networks.testnet;
+             console.log('testnet ',testnet);
             const mnemonic = bip39.generateMnemonic(); // generate string
-            console.log('mnemonic  ',mnemonic)
+            console.log('mnemonic  ',mnemonic);
             const seed = await bip39.mnemonicToSeed(mnemonic); // create seed buffer
-            const root = hdkey.fromMasterSeed(seed);
+            console.log('seed ',seed)
+            const root = bip32.fromSeed(seed, testnet)
+            console.log('root ',root);
             // const masterPrivateKey = root.privateKey.toString('hex');
-             const addrssNode = root.derive("m/44'/60'/0'/0/0");
-             const publicKey = addrssNode._publicKey;
-            console.log(publicKey);
-            const generateHash = createHash('sha256').update(publicKey).digest();
-            const rmHash = createHash('rmd160').update(generateHash).digest();
-            const generateBuffer = Buffer.allocUnsafe(21);
-            const data = generateBuffer.writeUInt8(0x00,0);
-            console.log('data : ',data);
-            rmHash.copy(generateBuffer,1);
-    
-            const checkBase = checkHash.encode(generateBuffer);
-    
-            console.log(`checkBase ${checkBase}`);
+             const account = root.derivePath("m/44'/60'/0'/0/0");
+             console.log('account ', account);
+             const accountXPub = account.neutered().toBase58();
+             console.log('accountXPub ',accountXPub);
+
+             const index = 5;
+
+             const webRoot = bip32.fromBase58(accountXPub,testnet);
+             console.log('webroot ',webRoot);
+             const webserverChild = webRoot.derive(0).derive(index);
+            console.log('webserverChild:', webserverChild);
+
+            console.log('webserverChild address:', BitcoinWallet.getAddress(webserverChild, testnet));
+
              res.send(mnemonic);
         } catch (error) {
-            throw new Error(error.message);
+            throw new Error(error);
         }
         
     }
